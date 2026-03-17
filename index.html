@@ -429,31 +429,24 @@
   </p>
 
   <!-- ФОРМА ЗАЯВКИ -->
-  <form action="https://formspree.io/f/xbddjgzv"
-        method="POST"
-        enctype="multipart/form-data">
+  <form id="contactForm" action="https://http://127.0.0.1:8000/api/submit" 
+      method="POST" enctype="multipart/form-data">
 
     <input type="text" name="name" placeholder="Ваше имя" required>
     <input type="text" name="contact" placeholder="Email или телефон" required>
-    <textarea name="message" placeholder="Кратко опишите задачу"></textarea>
-  <!--
-    <input type="file"
-           id="fileInput"
-           name="files"
-           multiple
-           accept=".pdf,.doc,.docx,.xls,.xlsx">
-   -->
-  <!--
-    <textarea name="files_links"
-       placeholder="Ссылки на документы (Google Drive / Яндекс Диск)">
-    </textarea>
-   -->
+    <textarea name="message" placeholder="Кратко опишите задачу" rows="4"></textarea>
 
-    <div id="fileList"
-         style="color:#94a3b8;font-size:14px;margin-bottom:16px;"></div>
+    <!-- Раскомментируем загрузку файлов (теперь будет работать) -->
+    <input type="file" id="fileInput" name="files" multiple accept=".pdf,.doc,.docx,.xls,.xlsx">
+    <div id="fileList" style="color:#94a3b8;font-size:14px;margin-bottom:16px;"></div>
 
-    <input type="hidden" name="_redirect" value="thanks.html">
     <button type="submit" class="btn">Отправить запрос</button>
+</form>
+
+<!-- Добавляем красивый успех без перезагрузки страницы -->
+<div id="successMessage" style="display:none; color:#86efac; margin-top:20px; font-weight:600;">
+    ✅ Заявка отправлена! Я свяжусь с вами в ближайшее время.
+</div>
   </form>
 </section>
 
@@ -564,6 +557,26 @@ function calculatePrice() {
     </span>
   `;
 }
+</script>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();                     // не даём странице перезагрузиться
+    const formData = new FormData(this);
+    
+    try {
+        const res = await fetch(this.action, { method: 'POST', body: formData });
+        if (res.ok) {
+            document.getElementById('successMessage').style.display = 'block';
+            this.reset();                       // очищаем форму
+            document.getElementById('fileList').innerHTML = '';
+        } else {
+            alert('Что-то пошло не так 😔 Попробуйте ещё раз');
+        }
+    } catch (err) {
+        alert('Ошибка соединения. Проверьте, запущен ли backend');
+    }
+});
 </script>
 
 </body>
